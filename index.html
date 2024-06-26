@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Map with Post Office Information</title>
+    <style>
+      body {
+        display: flex;
+        height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+      #map {
+        flex: 1;
+        height: 100%;
+      }
+      #info {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+      }
+    </style>
+    <script>
+      async function initMap() {
+        const mapContainer = document.getElementById("map");
+
+        const { Map } = await google.maps.importLibrary("maps");
+        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+        // Initialize the map
+        const map = new Map(mapContainer, {
+          zoom: 15,
+          center: { lat: 37.4220656, lng: -122.0840897 },
+          mapId: 'your key',  // Replace with your actual Map ID
+        });
+
+        // Geocode the post office location
+        const geocoder = new google.maps.Geocoder();
+        const address = "Bhimavaram";
+        console.log("Geocoding address:", address);
+        geocoder.geocode({ address: address }, (results, status) => {
+            console.log("Geocoding results:", results);
+            console.log("Geocoding status:", status);
+          if (status === "OK") {
+            map.setCenter(results[0].geometry.location);
+
+            // Create the marker
+            new AdvancedMarkerElement({
+              map: map,
+              position: results[0].geometry.location,
+              title: "Bhimavaram Railway Colony",
+            });
+          } else {
+            alert("Geocode was not successful for the following reason: " + status);
+          }
+        });
+      }
+
+      window.initMap = initMap;
+    </script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="info">
+      <h1>Bhimavaram Railway Colony</h1>
+      <p><strong>Description:</strong> N/A</p>
+      <p><strong>Branch Type:</strong> Sub Post Office</p>
+      <p><strong>Delivery Status:</strong> Non-Delivery</p>
+      <p><strong>Circle:</strong> Andhra Pradesh</p>
+      <p><strong>District:</strong> West Godavari</p>
+      <p><strong>Division:</strong> Bhimavaram</p>
+      <p><strong>Region:</strong> Vijayawada</p>
+      <p><strong>State:</strong> Andhra Pradesh</p>
+      <p><strong>Country:</strong> India</p>
+      <p><strong>Pincode:</strong> 534201</p>
+    </div>
+
+    <!-- Load the Google Maps API script asynchronously -->
+    <script
+      src=`https://maps.googleapis.com/maps/api/js?key={yourkey}&callback=initMap`
+      async
+    ></script>
+  </body>
+</html>
