@@ -30,29 +30,44 @@
         const map = new Map(mapContainer, {
           zoom: 15,
           center: { lat: 37.4220656, lng: -122.0840897 },
-          mapId: 'your key',  // Replace with your actual Map ID
+          mapId: 'f1e16dc75ce5a2c7',  // Replace with your actual Map ID
         });
 
         // Geocode the post office location
-        const geocoder = new google.maps.Geocoder();
-        const address = "Bhimavaram";
-        console.log("Geocoding address:", address);
-        geocoder.geocode({ address: address }, (results, status) => {
-            console.log("Geocoding results:", results);
-            console.log("Geocoding status:", status);
-          if (status === "OK") {
-            map.setCenter(results[0].geometry.location);
+        const geocoder_api = '667c484be3737451793319zna94bd77'
+        const area = 'Bhimavaram Railway Colony'
+        fetch(`https://geocode.maps.co/search?q=${area}&api_key=${geocoder_api}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                const firstResult = data[0];
+                const lat = parseFloat(firstResult.lat);
+                const lon = parseFloat(firstResult.lon);
 
-            // Create the marker
-            new AdvancedMarkerElement({
-              map: map,
-              position: results[0].geometry.location,
-              title: "Bhimavaram Railway Colony",
-            });
-          } else {
-            alert("Geocode was not successful for the following reason: " + status);
-          }
+                // Assuming 'map' and 'AdvancedMarkerElement' are already defined
+                if (lat && lon) {
+                    const location = new google.maps.LatLng(lat, lon); // Replace with appropriate map API syntax
+
+                    // Set map center
+                    map.setCenter(location);
+
+                    // Create marker
+                    new AdvancedMarkerElement({
+                        map: map,
+                        position: location,
+                        title: "Bhimavaram Railway Colony",
+                    });
+                } else {
+                    console.error("Latitude or longitude is not valid.");
+                }
+            } else {
+                console.error("No results found.");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
         });
+
       }
 
       window.initMap = initMap;
@@ -76,8 +91,9 @@
 
     <!-- Load the Google Maps API script asynchronously -->
     <script
-      src=`https://maps.googleapis.com/maps/api/js?key={yourkey}&callback=initMap`
-      async
+        
+        src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCvg6EYrQJyOYastrl0iqRABLxHW-OsB5s&callback=initMap'
+        async
     ></script>
   </body>
 </html>
