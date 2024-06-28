@@ -16,43 +16,16 @@ const db = getFirestore();
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
-app.use(express.static('images'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-app.get('/dashboard', (req, res) => {
-    const { username } = req.query;
-    if (!username) {
-        return res.status(401).send('Unauthorized');
-    }
-    res.render('dashboard', { username });
-});
-app.get('/search', (req, res) => {
-    
-    const { moviename } = req.query;
-    // console.log(moviename);
-    if (!moviename) {
-        return res.status(400).send('Bad Request');
-    }
-    
-    const apiKey = '8f7a9f39';
-    const apiUrl = `http://www.omdbapi.com/?t=${encodeURIComponent(moviename)}&apikey=${apiKey}`;
-    request(apiUrl, { json: true }, (err, response, body) => {
-        if (err || !body) {
-            return res.status(500).send('Internal Server Error');
-        }
-        res.render('results', { details: body });
-    });
-});
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login.html'));
-});
+
 
 app.listen(8080, () => {
     console.log('server is running on http://localhost:8080');
 });
 
-app.post('/api/users/login', (req, res) => {
+app.post('/login', (req, res) => {
     const { email, password } = req.body;
 
     db.collection('Loginpage').where('email', '==', email).where('password', '==', password).get()
@@ -70,11 +43,11 @@ app.post('/api/users/login', (req, res) => {
         });
 });
 
-app.post('/api/users', (req, res) => {
+app.post('/signup', (req, res) => {
     const userData = req.body;
     db.collection('Loginpage').add(userData)
         .then((docRef) => {
-            res.status(201).json({ message: "User added successfully", username: userData.name });
+            res.status(201).json({ message: "User added successfully", username: userData.email });
         })
         .catch((error) => {
             console.error("Error adding user:", error);
@@ -83,13 +56,34 @@ app.post('/api/users', (req, res) => {
 });
 
 app.post('/search', (req, res) => {
-    const { moviename } = req.body;
+    const { city } = req.body;
     // console.log(moviename+"hi");
-    if (moviename){
-        res.status(201).json({ message: "User added successfully", moviename: moviename });
+    if (city){
+        res.status(201).json({ message: "User added successfully", city:city });
     }
      else {
-            res.status(404).json({ error: 'Movie not found' });
+            res.status(404).json({ error: 'city not found' });
         }
     });
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'))
+})
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'popup.html'));
+})
+app.get('/search', (req, res) => {
+    const {city}=req.query;
+    console.log(city);
+    if (!city) {
+        return res.status(400).send('Bad Request');
+    }
+    const apiUrl=`https://api.postalpincode.in/postoffice/${encodeURIComponent(city)}`
+    request(apiUrl, { json: true }, (err, response, body) => {
+        if (err || !body) {
+            return res.status(500).send('Internal Server Error');
+        }
+        const data=body[0].PostOffice[0];
+        res.render('index', { details: data });
+    });
 
+})

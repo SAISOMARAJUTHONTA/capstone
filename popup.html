@@ -238,7 +238,7 @@
             <div class="search_wrap">
               <div class="search_bar">
                 
-                <input type="text" placeholder="Search" id="moviename">
+                <input type="text" placeholder="Search" id="cityname">
                 <button id="search" type="submit"><i class="fa fa-search"></i></button>
               </div>
             </div>
@@ -280,62 +280,31 @@
     </footer>
 
     <script>
-        const loginText = document.querySelector(".title-text .login");
-const loginForm = document.querySelector("form.login");
-const loginBtn = document.querySelector("label.login");
-const signupBtn = document.querySelector("label.signup");
-const signupLink = document.querySelector("form .signup-link a");
-const loginLink = document.querySelector("form .login-link a");
-const removeBtn = document.querySelector("button.my-button");
-let wrapper = document.getElementById("wrapper");
+      function handleSubmit(ev){
+        ev.preventDefault();
+        const city=document.getElementById('cityname').value;
+        console.log(city)
+        fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({city: city }),
+            }) .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to search');
+                }
+                return response.json();
+            })
+            .then(data => {
+                window.location.href = `/search?city=${encodeURIComponent(data.city)}`; // Redirect to dashboard with movie name
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Error occurred while searching");
+            });
 
-signupBtn.onclick = () => {
-  loginForm.style.marginLeft = "-50%";
-  loginText.style.marginLeft = "-50%";
-};
-
-loginBtn.onclick = () => {
-  loginForm.style.marginLeft = "0%";
-  loginText.style.marginLeft = "0%";
-};
-
-signupLink.onclick = () => {
-  signupBtn.click();
-  return false;
-};
-
-loginLink.onclick = () => {
-  loginBtn.click();
-  return false;
-};
-
-removeBtn.onclick = () => {
-  wrapper.classList.remove("open-login", "open-signup");
-  return false;
-};
-
-function openLogin() {
-  wrapper.classList.add("open-login");
-}
-
-function openSignup() {
-  wrapper.classList.add("open-signup");
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  const loginButton = document.querySelector('.cta-primary');
-  const signupButton = document.querySelector('.cta-secondary');
-
-  loginButton.onclick = () => {
-    openLogin();
-    loginBtn.click();
-  };
-
-  signupButton.onclick = () => {
-    openSignup();
-    signupBtn.click();
-  };
-});
+      }document.getElementById('search').addEventListener('click',handleSubmit);
 
     </script>
 </body>

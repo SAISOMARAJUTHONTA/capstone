@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-        <div class="wrapper">
+    <div class="wrapper">
       <div class="title-text">
         <div class="title login">Login Form</div>
         <div class="title signup">Signup Form</div>
@@ -21,27 +21,27 @@
         <div class="form-inner">
           <form action="#" class="login">
             <div class="field">
-              <input type="text" placeholder="Email Address" required>
+              <input type="text" id="login_email" placeholder="Email Address" required>
             </div>
             <div class="field">
-              <input type="password" placeholder="Password" required>
+              <input type="password" id="login_pass" placeholder="Password" required>
             </div>
             <div class="field btn">
               <div class="btn-layer"></div>
-              <input type="submit" value="Login">
+              <input type="submit" id="login_sub" value="Login">
             </div>
             <div class="signup-link">Don't have an account? <a href="">Signup now</a></div>
           </form>
           <form action="#" class="signup">
             <div class="field">
-              <input type="text" placeholder="Email Address" required>
+              <input type="text" id="sign_email" placeholder="Email Address" required>
             </div>
             <div class="field">
-              <input type="password" placeholder="Password" required>
+              <input type="password" id="sign_pass" placeholder="Password" required>
             </div>
             <div class="field btn">
               <div class="btn-layer"></div>
-              <input type="submit" value="Signup">
+              <input type="submit" id="sign_sub" value="Signup">
             </div>
             <div class="login-link">Already have an account? <a href="">Login now</a></div>
           </form>
@@ -50,5 +50,71 @@
     </div>
 
       <script src="script.js"></script>
+      <script>
+        function signup(ev){
+          ev.preventDefault();
+          const email=document.getElementById('sign_email').value;
+          const password=document.getElementById('sign_pass').value;
+          const userData={
+            email:email,
+            password:password
+          }
+          fetch('/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to add user');
+                    }
+                    return response.json();
+                }).then(data =>{
+                  window.location.href='/dashboard'
+                }
+                )
+                .catch(error => {
+                    // Handle error response
+                    console.error("Error adding user:", error);
+                    alert("Error during signup, please try again.");
+                });
+
+        }document.getElementById('sign_sub').addEventListener('click',signup);
+
+        function login(ev){
+          ev.preventDefault();
+          const email=document.getElementById('login_email').value;
+          const password=document.getElementById('login_pass').value;
+
+          const userData={
+            email:email,
+            password:password
+          }
+          fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to login');
+                }
+                return response.json();
+            }).then(data=>{
+              window.location.href='/dashboard'
+            })
+            .catch(error => {
+                // Handle login error
+                //console.error("Error during login:", error);
+                alert("Seems like you are not a user please signup first");
+                document.querySelector(".slider").classList.add("moveslider");
+                document.querySelector(".form-section").classList.add("form-section-move");
+                
+
+            });
+        }document.getElementById('login_sub').addEventListener('click',login);
+      </script>
   </body>
 </html>

@@ -51,7 +51,7 @@
 
         // Geocode the post office location
         const geocoder_api = '667c484be3737451793319zna94bd77'
-        const area = '<%= postOffice.Division %>'
+        const area = '<%= details.Division %>'
         fetch(`https://geocode.maps.co/search?q=${area}&api_key=${geocoder_api}`)
         .then(response => response.json())
         .then(data => {
@@ -71,7 +71,7 @@
                     new AdvancedMarkerElement({
                         map: map,
                         position: location,
-                        title: "<%= postOffice.Name %>",
+                        title: "<%= details.Name %>",
                     });
                 } else {
                     console.error("Latitude or longitude is not valid.");
@@ -94,17 +94,17 @@
       <div id="map"></div>
   </div>
     <div id="info">
-      <h1><%= postOffice.Name %></h1>
-      <p><strong>Description:</strong> <%= postOffice.Description || 'N/A' %></p>
-      <p><strong>Branch Type:</strong> <%= postOffice.BranchType %></p>
-      <p><strong>Delivery Status:</strong> <%= postOffice.DeliveryStatus %></p>
-      <p><strong>Circle:</strong> <%= postOffice.Circle %></p>
-      <p><strong>District:</strong> <%= postOffice.District %></p>
-      <p><strong>Division:</strong> <%= postOffice.Division %></p>
-      <p><strong>Region:</strong> <%= postOffice.Region %></p>
-      <p><strong>State:</strong> <%= postOffice.State %></p>
-      <p><strong>Country:</strong> <%= postOffice.Country %></p>
-      <p><strong>Pincode:</strong> <%= postOffice.Pincode %></p>
+      <h1><%= details.Name %></h1>
+      <p><strong>Description:</strong> <%= details.Description || 'N/A' %></p>
+      <p><strong>Branch Type:</strong> <%= details.BranchType %></p>
+      <p><strong>Delivery Status:</strong> <%= details.DeliveryStatus %></p>
+      <p><strong>Circle:</strong> <%= details.Circle %></p>
+      <p><strong>District:</strong> <%= details.District %></p>
+      <p><strong>Division:</strong> <%= details.Division %></p>
+      <p><strong>Region:</strong> <%= details.Region %></p>
+      <p><strong>State:</strong> <%= details.State %></p>
+      <p><strong>Country:</strong> <%= details.Country %></p>
+      <p><strong>Pincode:</strong> <%= details.Pincode %></p>
     </div>
 
     <!-- Load the Google Maps API script asynchronously -->
