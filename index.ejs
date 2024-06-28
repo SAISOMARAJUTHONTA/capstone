@@ -8,16 +8,31 @@
         height: 100vh;
         margin: 0;
         font-family: Arial, sans-serif;
+        background-color: #ff6f61;
+        background-color: #b22222; /* Firebrick red background for info section */
+        
+        color: #ecf0f1;
+        
       }
       
       #map {
-        flex: 1;
-        height: 100%;
+        height: 80%;
+        width: 80%;
+        border-radius: 2em;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+    
       }
       #info {
         flex: 1;
-        padding: 20px;
+        padding: 50px 20px;
         overflow-y: auto;
+      }
+      .map_wrap{
+        flex: 1;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     </style>
     <script>
@@ -36,7 +51,7 @@
 
         // Geocode the post office location
         const geocoder_api = '667c484be3737451793319zna94bd77'
-        const area = 'Bhimavaram Railway Colony'
+        const area = '<%= postOffice.Division %>'
         fetch(`https://geocode.maps.co/search?q=${area}&api_key=${geocoder_api}`)
         .then(response => response.json())
         .then(data => {
@@ -56,7 +71,7 @@
                     new AdvancedMarkerElement({
                         map: map,
                         position: location,
-                        title: "Bhimavaram Railway Colony",
+                        title: "<%= postOffice.Name %>",
                     });
                 } else {
                     console.error("Latitude or longitude is not valid.");
@@ -75,24 +90,25 @@
     </script>
   </head>
   <body>
-    <div id="map"></div>
+    <div class="map_wrap">
+      <div id="map"></div>
+  </div>
     <div id="info">
-      <h1>Bhimavaram Railway Colony</h1>
-      <p><strong>Description:</strong> N/A</p>
-      <p><strong>Branch Type:</strong> Sub Post Office</p>
-      <p><strong>Delivery Status:</strong> Non-Delivery</p>
-      <p><strong>Circle:</strong> Andhra Pradesh</p>
-      <p><strong>District:</strong> West Godavari</p>
-      <p><strong>Division:</strong> Bhimavaram</p>
-      <p><strong>Region:</strong> Vijayawada</p>
-      <p><strong>State:</strong> Andhra Pradesh</p>
-      <p><strong>Country:</strong> India</p>
-      <p><strong>Pincode:</strong> 534201</p>
+      <h1><%= postOffice.Name %></h1>
+      <p><strong>Description:</strong> <%= postOffice.Description || 'N/A' %></p>
+      <p><strong>Branch Type:</strong> <%= postOffice.BranchType %></p>
+      <p><strong>Delivery Status:</strong> <%= postOffice.DeliveryStatus %></p>
+      <p><strong>Circle:</strong> <%= postOffice.Circle %></p>
+      <p><strong>District:</strong> <%= postOffice.District %></p>
+      <p><strong>Division:</strong> <%= postOffice.Division %></p>
+      <p><strong>Region:</strong> <%= postOffice.Region %></p>
+      <p><strong>State:</strong> <%= postOffice.State %></p>
+      <p><strong>Country:</strong> <%= postOffice.Country %></p>
+      <p><strong>Pincode:</strong> <%= postOffice.Pincode %></p>
     </div>
 
     <!-- Load the Google Maps API script asynchronously -->
     <script
-        
         src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCvg6EYrQJyOYastrl0iqRABLxHW-OsB5s&callback=initMap'
         async
     ></script>
