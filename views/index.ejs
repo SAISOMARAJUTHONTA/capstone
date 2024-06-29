@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Google Map with Post Office Information</title>
+    <style>
+      body {
+        display: flex;
+        height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #ff6f61;
+        background-color: #b22222; /* Firebrick red background for info section */
+        
+        color: #ecf0f1;
+        
+      }
+      
+      #map {
+        height: 80%;
+        width: 80%;
+        border-radius: 2.1em;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+    
+      }
+      #info {
+        flex: 1;
+        padding: 50px 20px;
+        overflow-y: auto;
+      }
+      .map_wrap{
+        flex: 1;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    </style>
+    <script>
+      async function getApiKey() {
+        try {
+          const response = await fetch('/key.json'); // Ensure key.json is in the correct directory
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.error('Error reading key.json:', error);
+          return null;
+        }
+      }
+  
+      async function initMap() {
+        const apiKeyData = await getApiKey();
+        if (!apiKeyData) {
+          console.error('Failed to load API key data.');
+          return;
+        }
+        
+        const { key, mapId } = apiKeyData;
+        const mapContainer = document.getElementById("map");
+  
+        // Load the Google Maps API script asynchronously
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=loadMap`;
+        script.async = true;
+        document.head.appendChild(script);
+  
+        window.loadMap = async () => {
+          const { Map } = await google.maps.importLibrary("maps");
+          const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+  
+          // Initialize the map
+          const map = new Map(mapContainer, {
+            zoom: 15,
+            center: { lat: 37.4220656, lng: -122.0840897 },
+            mapId: mapId,  // Replace with your actual Map ID
+          });
+  
+          // Geocode the post office location
+          const geocoder_api = '667c484be3737451793319zna94bd77';
+          const area = '<%= details.Division %>';
+          fetch(`https://geocode.maps.co/search?q=${area}&api_key=${geocoder_api}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data && data.length > 0) {
+                const firstResult = data[0];
+                const lat = parseFloat(firstResult.lat);
+                const lon = parseFloat(firstResult.lon);
+  
+                if (lat && lon) {
+                  const location = new google.maps.LatLng(lat, lon);
+  
+                  // Set map center
+                  map.setCenter(location);
+  
+                  // Create marker
+                  new AdvancedMarkerElement({
+                    map: map,
+                    position: location,
+                    title: "<%= details.Name %>",
+                  });
+                } else {
+                  console.error("Latitude or longitude is not valid.");
+                }
+              } else {
+                console.error("No results found.");
+              }
+            })
+            .catch(error => {
+              console.error("Error fetching data:", error);
+            });
+        };
+      }
+  
+      window.onload = initMap;
+    </script>
+  </head>
+  <body>
+    <div class="map_wrap">
+      <div id="map"></div>
+  </div>
+    <div id="info">
+      <h1><%= details.Name %></h1>
+      <p><strong>Description:</strong> <%= details.Description || 'N/A' %></p>
+      <p><strong>Branch Type:</strong> <%= details.BranchType %></p>
+      <p><strong>Delivery Status:</strong> <%= details.DeliveryStatus %></p>
+      <p><strong>Circle:</strong> <%= details.Circle %></p>
+      <p><strong>District:</strong> <%= details.District %></p>
+      <p><strong>Division:</strong> <%= details.Division %></p>
+      <p><strong>Region:</strong> <%= details.Region %></p>
+      <p><strong>State:</strong> <%= details.State %></p>
+      <p><strong>Country:</strong> <%= details.Country %></p>
+      <p><strong>Pincode:</strong> <%= details.Pincode %></p>
+    </div>
+
+    <!-- Load the Google Maps API script asynchronously -->
+   
+  </body>
+</html>
