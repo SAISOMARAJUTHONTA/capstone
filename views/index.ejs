@@ -76,7 +76,7 @@
   
           // Geocode the post office location
           const geocoder_api = '667c484be3737451793319zna94bd77';
-          const area = '<%= details.Division %>';
+          const area = '<%= details.Name %>';
           fetch(`https://geocode.maps.co/search?q=${area}&api_key=${geocoder_api}`)
             .then(response => response.json())
             .then(data => {
